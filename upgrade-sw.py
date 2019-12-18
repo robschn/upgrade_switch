@@ -33,9 +33,10 @@ for x in parse_dir:
     if x['name'] == old_ios_name:
         flash_numbers.append(x['file_system'])
 
-print(f'Found: {sorted(flash_numbers)}')
+sort_flash = sorted(flash_numbers)
+print(f'Found: {sort_flash}')
 
-for flash_num in flash_numbers:
+for flash_num in sort_flash:
     print(f'Copying {ios_name} to {flash_num}. Please wait...')
     net_connect.send_command(f'copy ftp://user:user@{ftp_server}/{ios_name} {flash_num}{ios_name}', expect_string=']?')
     net_connect.send_command('\n', expect_string='#')
