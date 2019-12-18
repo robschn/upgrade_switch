@@ -10,7 +10,7 @@ swi_host = '172.21.225.115'
 username = creds.username
 password = creds.password
 ftp_server = creds.ip_address
-ios_name = 'c2960x-universalk9-mz.152-7.E0a.bin'\
+ios_name = 'c2960x-universalk9-tar.152-7.E0a.tar'
 # ios_size = '26534912'
 
 print (f'\nConnecting to {swi_host} now...')
@@ -29,15 +29,12 @@ parse_dir = parse_output(platform='cisco_ios', command='dir all', data=sh_dir)
 
 flash_numbers = []
 for x in parse_dir:
-    flash_numbers.append(x['file_system'])
+    if x['name'] == ios_name:
+        flash_numbers.append(x['file_system'])
 
-print(f'Found: {" ".join(str(x) for x in flash_numbers)}')
+print(f'archive download-sw /leave-old-sw ftp://user:user@{ftp_server}/{ios_name}')
 
-for flash_num in flash_numbers:
-    print(f'Sending command to copy {ios_name} to {flash_num}...')
-    net_connect.send_command(f'copy ftp://user:user@{ftp_server}/{ios_name} {flash_num}{ios_name}', expect_string=']?')
-
-print('Please wait for the copying to finsh.')
+print('\nPlease wait for the copying to finsh.')
 # config_command = f'boot system switch all flash:/{ios_name}'
 
 # net_connect.send_config_set(config_command)
