@@ -40,11 +40,11 @@ for flash_num in flash_numbers:
     net_connect.send_command(f'copy ftp://user:user@{ftp_server}/{ios_name} {flash_num}{ios_name}', expect_string=']?')
     net_connect.send_command('\n', expect_string='#')
 
-print('Setting boot path and writing memory.')
+print('\nSetting boot path and writing memory.')
 net_connect.send_config_set(f'boot system switch all flash:/{ios_name}')
 net_connect.send_command('write mem')
 
-print('Here is the current switch priority')
+print('Here is the current switch priority\n')
 sh_swi = net_connect.send_command('show switch')
 print(sh_swi)
 
@@ -52,13 +52,15 @@ reload_prompt = input('Would you like to proceed with a reload? [y/n]: ')
 if reload_prompt == 'y':
     reload_time = input('Enter reload time HH:MM. If now, press "enter": ')
     if reload_time == '':
+        print('Reloading now!')
         net_connect.send_command('reload', expect_string='[confirm]')
         net_connect.send_command('\n')
     else:
+        print(f'Reload set for {reload_time}')
         net_connect.send_command(f'reload at {reload_time}')
         net_connect.send_command('reload', expect_string='[confirm]')
         net_connect.send_command('\n')
 
-else:
-    print('Finished! Exiting now..')
-    exit()
+print('Update finished! Exiting now..')
+exit()
+
