@@ -10,7 +10,7 @@ username = creds.username
 password = creds.password
 ftp_server = creds.ip_address
 ios_name = 'c2960x-universalk9-mz.152-7.E0a.bin'
-old_ios_name = 'c2960x-universalk9-mz.152-4.E6.bin'
+# old_ios_name = 'c2960x-universalk9-mz.152-4.E6.bin'
 # ios_size = '26534912'
 
 print (f'Connecting now..')
@@ -30,13 +30,12 @@ parse_dir = parse_output(platform='cisco_ios', command='dir all', data=sh_dir)
 
 flash_numbers = []
 for x in parse_dir:
-    if x['name'] == old_ios_name:
+    if x['name'] == 'vlan.dat':
         flash_numbers.append(x['file_system'])
 
-sort_flash = sorted(flash_numbers)
-print(f'Found: {sort_flash}')
+print(f'Found: {flash_numbers}')
 
-for flash_num in sort_flash:
+for flash_num in flash_numbers:
     print(f'Copying {ios_name} to {flash_num}. Please wait...')
     net_connect.send_command(f'copy ftp://user:user@{ftp_server}/{ios_name} {flash_num}{ios_name}', expect_string=']?')
     net_connect.send_command('\n', expect_string='#')
