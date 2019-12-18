@@ -3,14 +3,14 @@ from getpass import getpass
 from ntc_templates.parse import parse_output
 
 # creds
-import os
 import creds
 
 swi_host = input('\nSwitch IP: ')
 username = creds.username
 password = creds.password
 ftp_server = creds.ip_address
-ios_name = 'c2960x-universalk9-mz.152-7.E0a.bin'
+# ios_name = 'c2960x-universalk9-mz.152-7.E0a.bin'
+ios_name = 'c2960x-universalk9-mz.152-4.E6.bin'
 # ios_size = '26534912'
 
 print (f'\nConnecting to {swi_host} now...')
@@ -32,11 +32,15 @@ net_connect.enable()
 
 # net_connect.send_config_set(config_command)
 # print('Done! Exiting now..')
-sh_dir = net_connect.send_command('dir')
 
-parse_dir = parse_output(platform='cisco_ios', command='dir', data=sh_dir)
+sh_dir = net_connect.send_command('dir all')
 
-print(parse_dir)
+parse_dir = parse_output(platform='cisco_ios', command='dir all', data=sh_dir)
+
+print('Printing Directory Info..')
+for x in parse_dir:
+    if x['name'] == ios_name:
+        print(x['file_system'], x['name'])
 
 # output sh boot
 # dir each flash
