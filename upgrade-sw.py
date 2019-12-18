@@ -33,7 +33,7 @@ for x in parse_dir:
     if x['name'] == old_ios_name:
         flash_numbers.append(x['file_system'])
 
-print(f'Found: {" ".join(str(x) for x in flash_numbers)}\n')
+print(f'Found: {sorted(flash_numbers)}')
 
 for flash_num in flash_numbers:
     print(f'Copying {ios_name} to {flash_num}. Please wait...')
