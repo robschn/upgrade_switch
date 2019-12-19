@@ -25,20 +25,24 @@ net_connect = Netmiko(**myDevice)
 net_connect.enable()
 
 print('Gathering switch information..')
-sh_dir = net_connect.send_command('dir all')
-parse_dir = parse_output(platform='cisco_ios', command='dir all', data=sh_dir)
+sh_swi = net_connect.send_command('show switch detail')
+parse_swi = parse_output(platform='cisco_ios', command='show switch detail', data=sh_swi)
 
-flash_numbers = []
-for x in parse_dir:
-    if x['name'] == 'vlan.dat':
-        flash_numbers.append(x['file_system'])
+swi_numbers = []
+for x in parse_swi:
+    swi_numbers.append(x['switch'])
 
-print(f'Found: {flash_numbers}')
+print(f'Found found {swi_numbers[-1]} switch(es) in the stack!')
+# ftp the file to flash1:
+net_connect.send_command(f'copy ftp://user:user@{ftp_server}/{ios_name} flash:/', expect_string=']?')
+net_connect.send_command('\n', expect_string='#')
 
-for flash_num in flash_numbers:
-    print(f'Copying {ios_name} to {flash_num}. Please wait...')
-    net_connect.send_command(f'copy ftp://user:user@{ftp_server}/{ios_name} {flash_num}{ios_name}', expect_string=']?')
-    net_connect.send_command('\n', expect_string='#')
+# copy from flash1: to flash#:
+for swi_num in swi_numbers:
+    print(f'Copying {ios_name} to flash{swi_num}. Please wait...')
+    if swi_num != 1
+        net_connect.send_command(f'copy flash:/{ios_name} flash{swi_num}:/', expect_string=']?')
+        net_connect.send_command('\n', expect_string='#')
 
 print('\nSetting boot path and writing memory.')
 net_connect.send_config_set(f'boot system switch all flash:/{ios_name}')
@@ -55,11 +59,13 @@ if reload_prompt == 'y':
         print('Reloading now!')
         net_connect.send_command('reload', expect_string='[confirm]')
         net_connect.send_command('\n')
+        
     else:
         print(f'Reload set for {reload_time}')
         net_connect.send_command(f'reload at {reload_time}')
         net_connect.send_command('reload', expect_string='[confirm]')
         net_connect.send_command('\n')
+        
 
 print('Update finished! Exiting now..')
 exit()
